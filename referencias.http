@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:3000
+
+### Listar todos os formulários
+GET {{baseUrl}}/formularios
+
+### Buscar questões de um formulário específico
+GET {{baseUrl}}/formularios/1/questoes
+
+### Enviar respostas e calcular nota
+POST {{baseUrl}}/resultados
+Content-Type: application/json
+
+{
+    "formulario_id": 1,
+    "nome_usuario": "Dev Senior",
+    "respostas": [
+        { "questao_id": 1, "opcao": "A" },
+        { "questao_id": 2, "opcao": "C" }
+    ]
+}
+
+### Ver ranking de um formulário
+GET {{baseUrl}}/formularios/1/ranking
