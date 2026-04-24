@@ -3,138 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dia da Família - Quiz</title>
+    <title>Dia da Família - Quiz Escolar</title>
     <style>
-        /* Estilos limpos e modernos para o formulário */
+        /* Define a paleta de cores modernas e fontes limpas */
+        :root {
+            --primary-color: #1a73e8; /* Azul moderno */
+            --bg-color: #f8fafc; /* Cinza quase branco, acolhedor */
+            --text-color: #1e293b; /* Cinza escuro para leitura */
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --success-color: #10b981; /* Verde para sucesso no ranking */
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
-            padding: 40px 20px;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
             margin: 0;
+            box-sizing: border-box;
         }
+
         .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px; /* Bordas bem arredondadas */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra suave e elegante */
             width: 100%;
-            max-width: 600px;
+            max-width: 680px;
+            transition: all 0.3s ease;
         }
-        h2 { margin-top: 0; color: #1a73e8; }
+
+        /* Animação suave para as trocas de tela */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-screen {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
         .hidden { display: none !important; }
-        .form-group { margin-bottom: 20px; }
+
+        /* Cabeçalhos */
+        h1 { margin-top: 0; color: var(--primary-color); font-weight: 800; text-align: center; font-size: 2.2rem; }
+        h2 { color: var(--primary-color); font-weight: 700; margin-bottom: 25px; }
+        h3 { font-size: 1.25rem; font-weight: 600; margin-top: 0; margin-bottom: 15px; }
+        p { color: #64748b; line-height: 1.6; }
+
+        /* Inputs */
+        .form-group { margin-bottom: 25px; }
+        label.input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
+        
         input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             box-sizing: border-box;
             font-size: 16px;
+            transition: border-color 0.2s;
         }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        /* Botões */
         button {
-            background-color: #1a73e8;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
+            padding: 14px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
             width: 100%;
-            transition: background 0.3s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(26, 115, 232, 0.15);
         }
-        button:hover { background-color: #1557b0; }
-        .questao { margin-bottom: 30px; }
+        button:hover { 
+            background-color: #1557b0; 
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(26, 115, 232, 0.2);
+        }
+        button:active { transform: translateY(1px); }
+
+        /* Estilo para cada card de questão */
+        .questao { 
+            background-color: #f1f5f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Estilo das alternativas clicáveis */
         .alternativa {
-            display: block;
+            display: flex;
+            align-items: center;
             padding: 15px;
-            margin: 8px 0;
-            background-color: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
+            margin: 10px 0;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
-        .alternativa:hover { background-color: #e8eaed; }
-        .alternativa input { margin-right: 10px; transform: scale(1.2); }
+        .alternativa:hover { 
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+        }
+        
+        /* Destaque quando a alternativa for selecionada */
+        .alternativa:has(input:checked) {
+            border-color: var(--primary-color);
+            background-color: rgba(26, 115, 232, 0.05);
+        }
+
+        .alternativa input { 
+            margin-right: 15px; 
+            margin-top: 0;
+            transform: scale(1.3); /* Radio button maior */
+            cursor: pointer;
+        }
+        
+        .alternativa strong { color: var(--primary-color); margin-right: 5px; }
+
+        /* Estilo do Ranking */
         .ranking-item {
             display: flex;
             justify-content: space-between;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 18px;
+            align-items: center;
+            padding: 18px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1rem;
         }
-        .ranking-item:nth-child(1) { font-weight: bold; color: #d4af37; } /* Ouro para o 1º */
+        .ranking-item:last-child { border-bottom: none; }
+        
+        .ranking-item span { display: flex; align-items: center; gap: 10px; }
+
+        /* Medalhas para os top 3 */
+        .top-1 { font-weight: bold; color: #b59410; background-color: rgba(212, 175, 55, 0.1); border-radius: 8px; }
+        .top-1::before { content: "🥇"; font-size: 1.4rem; }
+        
+        .top-2 { font-weight: 600; color: #71717a; }
+        .top-2::before { content: "🥈"; font-size: 1.3rem; }
+        
+        .top-3 { font-weight: 600; color: #a16207; }
+        .top-3::before { content: "🥉"; font-size: 1.2rem; }
+        
+        .pontuacao { color: var(--success-color); font-weight: 700; font-size: 1.2rem; }
+
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div id="tela-identificacao">
-            <h2>Dia da Família 👨‍👩‍👧‍👦</h2>
-            <p>Bem-vindo! Para começar o quiz do aluno, digite seu nome abaixo:</p>
+        <div id="tela-identificacao" class="active-screen">
+            <h1>Escola Viva</h1>
+            <p style="text-align: center;">Bem-vindo ao "Dia da Família"! É hora de testar o quanto você conhece o seu filho(a).</p>
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+            
             <div class="form-group">
-                <input type="text" id="nome-responsavel" placeholder="Ex: Vanessa (Mãe do Lorenzo)">
+                <label for="nome-responsavel" class="input-label">Seu Nome Completo:</label>
+                <input type="text" id="nome-responsavel" placeholder="Ex: Vanessa (Mãe do lorenzo)">
             </div>
-            <button onclick="iniciarQuiz()">Começar o Quiz</button>
+            <button onclick="iniciarQuiz()">Começar Desafio</button>
         </div>
 
         <div id="tela-quiz" class="hidden">
-            <h2 id="titulo-quiz">Carregando perguntas...</h2>
+            <h2>Responda o Quiz 🤔</h2>
+            <p style="margin-bottom: 30px;">Clique na alternativa correta para cada pergunta:</p>
             <div id="lista-perguntas"></div>
-            <button onclick="enviarRespostas()">Finalizar e ver o Ranking</button>
+            <button onclick="enviarRespostas()">Finalizar e Ver o Ranking 🏆</button>
         </div>
 
         <div id="tela-ranking" class="hidden">
-            <h2>Ranking Final 🏆</h2>
-            <p>Veja quem acertou mais perguntas sobre o aluno:</p>
-            <div id="lista-ranking" style="margin-bottom: 20px;"></div>
-            <button onclick="location.reload()">Voltar ao Início</button>
+            <h2>🏆 Ranking do Dia</h2>
+            <p>Parabéns por participar! Veja abaixo como ficou a classificação geral:</p>
+            
+            <div id="wrapper-ranking" style="background-color: #f1f5f9; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
+                <div id="lista-ranking"></div>
+            </div>
+            
+            <button onclick="location.reload()">Participar Novamente</button>
         </div>
     </div>
 
     <script>
-        // Configurações do Backend
+        // Configurações do Backend (mantidas do código anterior)
         const API_URL = 'http://localhost:3000';
-        const ID_FORMULARIO = 1; // ID do 'Quiz do Aluno Padrão' que criamos no banco
+        const ID_FORMULARIO = 1; 
         
-        // Variável para guardar o nome de quem está respondendo
         let nomeDoPai = '';
 
-        // FUNÇÃO 1: Iniciar o quiz e buscar as perguntas
         async function iniciarQuiz() {
             nomeDoPai = document.getElementById('nome-responsavel').value.trim();
             if (!nomeDoPai) return alert('Por favor, digite seu nome antes de começar!');
 
-            // Esconde a tela inicial e mostra o quiz
             document.getElementById('tela-identificacao').classList.add('hidden');
-            document.getElementById('tela-quiz').classList.remove('hidden');
+            document.getElementById('tela-quiz').classList.remove('hidden', 'active-screen');
+            // Força a animação de fade
+            void document.getElementById('tela-quiz').offsetWidth; 
+            document.getElementById('tela-quiz').classList.add('active-screen');
 
-            // Busca os dados no backend
             const resposta = await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/questoes`);
             const questoes = await resposta.json();
 
-            document.getElementById('titulo-quiz').innerText = 'Responda as questões:';
             const container = document.getElementById('lista-perguntas');
             container.innerHTML = '';
 
-            // Monta as perguntas na tela (AQUI RESOLVEMOS O SEU UNDEFINED!)
             questoes.forEach((questao, index) => {
                 const divQuestao = document.createElement('div');
                 divQuestao.className = 'questao';
                 
-                // Usamos questao.texto (como definido no nosso Node.js)
                 divQuestao.innerHTML = `<h3>${index + 1}. ${questao.texto}</h3>`;
 
-                // Usamos alternativa.texto e alternativa.letra
                 questao.alternativas.forEach(alt => {
                     const label = document.createElement('label');
                     label.className = 'alternativa';
                     label.innerHTML = `
                         <input type="radio" name="questao_${questao.id}" value="${alt.id}">
-                        <strong>${alt.letra}:</strong> ${alt.texto}
+                        <strong>${alt.letra})</strong> ${alt.texto}
                     `;
                     divQuestao.appendChild(label);
                 });
@@ -143,15 +241,12 @@
             });
         }
 
-        // FUNÇÃO 2: Coletar as respostas escolhidas e enviar para o backend
         async function enviarRespostas() {
-            // Buscamos as questões novamente só para saber quantas existem e validar se todas foram respondidas
             const respostaQuestoes = await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/questoes`);
             const questoes = await respostaQuestoes.json();
 
             const respostasEscolhidas = [];
 
-            // Valida se o usuário marcou uma opção para cada pergunta
             for (const questao of questoes) {
                 const inputSelecionado = document.querySelector(`input[name="questao_${questao.id}"]:checked`);
                 
@@ -165,7 +260,6 @@
                 });
             }
 
-            // Envia para o backend salvar a tentativa
             await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/tentativas`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -175,14 +269,15 @@
                 })
             });
 
-            // Vai para a tela de Ranking
             mostrarRanking();
         }
 
-        // FUNÇÃO 3: Buscar e exibir o ranking ordenado
         async function mostrarRanking() {
             document.getElementById('tela-quiz').classList.add('hidden');
-            document.getElementById('tela-ranking').classList.remove('hidden');
+            document.getElementById('tela-ranking').classList.remove('hidden', 'active-screen');
+            // Força a animação
+            void document.getElementById('tela-ranking').offsetWidth; 
+            document.getElementById('tela-ranking').classList.add('active-screen');
 
             const resposta = await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/ranking`);
             const ranking = await resposta.json();
@@ -193,9 +288,15 @@
             ranking.forEach((posicao, index) => {
                 const div = document.createElement('div');
                 div.className = 'ranking-item';
+                
+                // Adiciona classes especiais para o top 3
+                if (index === 0) div.classList.add('top-1');
+                if (index === 1) div.classList.add('top-2');
+                if (index === 2) div.classList.add('top-3');
+
                 div.innerHTML = `
                     <span>${index + 1}º - ${posicao.nome_responsavel}</span>
-                    <span><strong>${posicao.pontuacao}</strong> acertos</span>
+                    <span class="pontuacao">${posicao.pontuacao} <small style="font-weight: 400; color: #64748b; font-size: 0.9rem; margin-left: 5px;">acertos</small></span>
                 `;
                 containerRanking.appendChild(div);
             });
