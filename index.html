@@ -1,165 +1,205 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Master - Dev Edition</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dia da Família - Quiz</title>
     <style>
-        .hidden { display: none; }
+        /* Estilos limpos e modernos para o formulário */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        h2 { margin-top: 0; color: #1a73e8; }
+        .hidden { display: none !important; }
+        .form-group { margin-bottom: 20px; }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #1557b0; }
+        .questao { margin-bottom: 30px; }
+        .alternativa {
+            display: block;
+            padding: 15px;
+            margin: 8px 0;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .alternativa:hover { background-color: #e8eaed; }
+        .alternativa input { margin-right: 10px; transform: scale(1.2); }
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+        .ranking-item:nth-child(1) { font-weight: bold; color: #d4af37; } /* Ouro para o 1º */
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div id="app" class="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
-        
-        <section id="screen-login" class="text-center">
-            <h1 class="text-3xl font-bold mb-6 text-gray-800">Bem-vindo ao Quiz</h1>
-            <input type="text" id="input-name" placeholder="Digite seu nome" class="w-full p-3 border border-gray-300 rounded mb-4 outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="app.login()" class="w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700 transition">Entrar</button>
-        </section>
-
-        <section id="screen-selection" class="hidden text-center">
-            <h2 class="text-2xl font-bold mb-4">Escolha um Quiz</h2>
-            <div id="quiz-list" class="space-y-3"></div>
-        </section>
-
-        <section id="screen-quiz" class="hidden">
-            <div class="flex justify-between items-center mb-6">
-                <span id="quiz-progress" class="text-sm font-semibold text-gray-500">Questão 1 de 5</span>
-                <span id="user-display" class="text-sm font-bold text-blue-600"></span>
+    <div class="container">
+        <div id="tela-identificacao">
+            <h2>Dia da Família 👨‍👩‍👧‍👦</h2>
+            <p>Bem-vindo! Para começar o quiz do aluno, digite seu nome abaixo:</p>
+            <div class="form-group">
+                <input type="text" id="nome-responsavel" placeholder="Ex: Vanessa (Mãe do Lorenzo)">
             </div>
-            <h3 id="question-text" class="text-xl font-medium mb-6"></h3>
-            <div id="options-container" class="space-y-4"></div>
-        </section>
+            <button onclick="iniciarQuiz()">Começar o Quiz</button>
+        </div>
 
-        <section id="screen-result" class="hidden text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Fim do Quiz!</h2>
-            <p class="text-lg text-gray-600 mb-6">Sua pontuação final foi:</p>
-            <div id="final-score" class="text-6xl font-black text-blue-600 mb-8">0</div>
-            <div class="flex gap-4">
-                <button onclick="app.loadRanking()" class="flex-1 bg-gray-800 text-white py-3 rounded font-bold hover:bg-gray-900">Ver Ranking</button>
-                <button onclick="location.reload()" class="flex-1 bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700">Tentar Novamente</button>
-            </div>
-        </section>
+        <div id="tela-quiz" class="hidden">
+            <h2 id="titulo-quiz">Carregando perguntas...</h2>
+            <div id="lista-perguntas"></div>
+            <button onclick="enviarRespostas()">Finalizar e ver o Ranking</button>
+        </div>
 
-        <section id="screen-ranking" class="hidden">
-            <h2 class="text-2xl font-bold mb-6 text-center">Ranking - Top 10</h2>
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b-2 border-gray-200">
-                        <th class="py-2">Usuário</th>
-                        <th class="py-2 text-right">Nota</th>
-                    </tr>
-                </thead>
-                <tbody id="ranking-body"></tbody>
-            </table>
-            <button onclick="location.reload()" class="w-full mt-8 bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700">Voltar ao Início</button>
-        </section>
-
+        <div id="tela-ranking" class="hidden">
+            <h2>Ranking Final 🏆</h2>
+            <p>Veja quem acertou mais perguntas sobre o aluno:</p>
+            <div id="lista-ranking" style="margin-bottom: 20px;"></div>
+            <button onclick="location.reload()">Voltar ao Início</button>
+        </div>
     </div>
 
     <script>
+        // Configurações do Backend
         const API_URL = 'http://localhost:3000';
+        const ID_FORMULARIO = 1; // ID do 'Quiz do Aluno Padrão' que criamos no banco
+        
+        // Variável para guardar o nome de quem está respondendo
+        let nomeDoPai = '';
 
-        const app = {
-            user: '',
-            currentQuizId: null,
-            questions: [],
-            currentIndex: 0,
-            answers: [],
+        // FUNÇÃO 1: Iniciar o quiz e buscar as perguntas
+        async function iniciarQuiz() {
+            nomeDoPai = document.getElementById('nome-responsavel').value.trim();
+            if (!nomeDoPai) return alert('Por favor, digite seu nome antes de começar!');
 
-            async login() {
-                const nameInput = document.getElementById('input-name');
-                if (!nameInput.value) return alert('Insira seu nome');
-                this.user = nameInput.value;
-                document.getElementById('user-display').innerText = this.user;
-                this.showScreen('selection');
-                await this.loadQuizzes();
-            },
+            // Esconde a tela inicial e mostra o quiz
+            document.getElementById('tela-identificacao').classList.add('hidden');
+            document.getElementById('tela-quiz').classList.remove('hidden');
 
-            async loadQuizzes() {
-                const response = await fetch(`${API_URL}/formularios`);
-                const quizzes = await response.json();
-                const container = document.getElementById('quiz-list');
-                container.innerHTML = quizzes.map(q => `
-                    <button onclick="app.startQuiz(${q.id})" class="w-full p-4 border border-gray-200 rounded hover:bg-blue-50 transition text-left font-medium">
-                        ${q.titulo}
-                    </button>
-                `).join('');
-            },
+            // Busca os dados no backend
+            const resposta = await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/questoes`);
+            const questoes = await resposta.json();
 
-            async startQuiz(id) {
-                this.currentQuizId = id;
-                const response = await fetch(`${API_URL}/formularios/${id}/questoes`);
-                this.questions = await response.json();
-                this.currentIndex = 0;
-                this.answers = [];
-                this.showScreen('quiz');
-                this.renderQuestion();
-            },
+            document.getElementById('titulo-quiz').innerText = 'Responda as questões:';
+            const container = document.getElementById('lista-perguntas');
+            container.innerHTML = '';
 
-            renderQuestion() {
-                const question = this.questions[this.currentIndex];
-                document.getElementById('quiz-progress').innerText = `Questão ${this.currentIndex + 1} de ${this.questions.length}`;
-                document.getElementById('question-text').innerText = question.enunciado;
+            // Monta as perguntas na tela (AQUI RESOLVEMOS O SEU UNDEFINED!)
+            questoes.forEach((questao, index) => {
+                const divQuestao = document.createElement('div');
+                divQuestao.className = 'questao';
+                
+                // Usamos questao.texto (como definido no nosso Node.js)
+                divQuestao.innerHTML = `<h3>${index + 1}. ${questao.texto}</h3>`;
 
-                const options = ['a', 'b', 'c', 'd'];
-                const container = document.getElementById('options-container');
-                container.innerHTML = options.map(opt => `
-                    <button onclick="app.handleAnswer('${opt.toUpperCase()}')" class="w-full p-4 bg-gray-50 border border-gray-200 rounded text-left hover:border-blue-500 hover:bg-blue-50 transition">
-                        <span class="font-bold mr-2">${opt.toUpperCase()}:</span> ${question['opcao_' + opt]}
-                    </button>
-                `).join('');
-            },
-
-            handleAnswer(option) {
-                this.answers.push({
-                    questao_id: this.questions[this.currentIndex].id,
-                    opcao: option
+                // Usamos alternativa.texto e alternativa.letra
+                questao.alternativas.forEach(alt => {
+                    const label = document.createElement('label');
+                    label.className = 'alternativa';
+                    label.innerHTML = `
+                        <input type="radio" name="questao_${questao.id}" value="${alt.id}">
+                        <strong>${alt.letra}:</strong> ${alt.texto}
+                    `;
+                    divQuestao.appendChild(label);
                 });
 
-                if (this.currentIndex < this.questions.length - 1) {
-                    this.currentIndex++;
-                    this.renderQuestion();
-                } else {
-                    this.submitResults();
+                container.appendChild(divQuestao);
+            });
+        }
+
+        // FUNÇÃO 2: Coletar as respostas escolhidas e enviar para o backend
+        async function enviarRespostas() {
+            // Buscamos as questões novamente só para saber quantas existem e validar se todas foram respondidas
+            const respostaQuestoes = await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/questoes`);
+            const questoes = await respostaQuestoes.json();
+
+            const respostasEscolhidas = [];
+
+            // Valida se o usuário marcou uma opção para cada pergunta
+            for (const questao of questoes) {
+                const inputSelecionado = document.querySelector(`input[name="questao_${questao.id}"]:checked`);
+                
+                if (!inputSelecionado) {
+                    return alert('Por favor, responda todas as perguntas antes de finalizar!');
                 }
-            },
 
-            async submitResults() {
-                const response = await fetch(`${API_URL}/resultados`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        formulario_id: this.currentQuizId,
-                        nome_usuario: this.user,
-                        respostas: this.answers
-                    })
+                respostasEscolhidas.push({
+                    questao_id: questao.id,
+                    alternativa_id: parseInt(inputSelecionado.value)
                 });
-                const result = await response.json();
-                document.getElementById('final-score').innerText = result.nota;
-                this.showScreen('result');
-            },
-
-            async loadRanking() {
-                const response = await fetch(`${API_URL}/formularios/${this.currentQuizId}/ranking`);
-                const ranking = await response.json();
-                const body = document.getElementById('ranking-body');
-                body.innerHTML = ranking.map(r => `
-                    <tr class="border-b border-gray-100">
-                        <td class="py-3">${r.nome_usuario}</td>
-                        <td class="py-3 text-right font-bold text-blue-600">${r.nota}</td>
-                    </tr>
-                `).join('');
-                this.showScreen('ranking');
-            },
-
-            showScreen(screenId) {
-                document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-                document.getElementById(`screen-${screenId}`).classList.remove('hidden');
             }
-        };
+
+            // Envia para o backend salvar a tentativa
+            await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/tentativas`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nome_responsavel: nomeDoPai,
+                    respostas: respostasEscolhidas
+                })
+            });
+
+            // Vai para a tela de Ranking
+            mostrarRanking();
+        }
+
+        // FUNÇÃO 3: Buscar e exibir o ranking ordenado
+        async function mostrarRanking() {
+            document.getElementById('tela-quiz').classList.add('hidden');
+            document.getElementById('tela-ranking').classList.remove('hidden');
+
+            const resposta = await fetch(`${API_URL}/formularios/${ID_FORMULARIO}/ranking`);
+            const ranking = await resposta.json();
+
+            const containerRanking = document.getElementById('lista-ranking');
+            containerRanking.innerHTML = '';
+
+            ranking.forEach((posicao, index) => {
+                const div = document.createElement('div');
+                div.className = 'ranking-item';
+                div.innerHTML = `
+                    <span>${index + 1}º - ${posicao.nome_responsavel}</span>
+                    <span><strong>${posicao.pontuacao}</strong> acertos</span>
+                `;
+                containerRanking.appendChild(div);
+            });
+        }
     </script>
 </body>
 </html>

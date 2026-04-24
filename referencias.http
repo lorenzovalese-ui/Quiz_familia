@@ -1,23 +1,76 @@
 @baseUrl = http://localhost:3000
 
-### Listar todos os formulários
+### 1. Listar formulários (deve retornar o "Quiz do Aluno Padrão" cadastrado no banco.sql)
 GET {{baseUrl}}/formularios
 
-### Buscar questões de um formulário específico
+### 2. Listar as questões do Formulário 1
 GET {{baseUrl}}/formularios/1/questoes
 
-### Enviar respostas e calcular nota
-POST {{baseUrl}}/resultados
+### 3. Pai do aluno responde o formulário 1 (Tentativa com as respostas corretas do banco)
+# IDs das alternativas corretas geradas no banco.sql:
+# Q1: ID 1  (A)
+# Q2: ID 6  (B)
+# Q3: ID 11 (C)
+# Q4: ID 16 (D)
+# Q5: ID 19 (C)
+# Q6: ID 23 (C)
+POST {{baseUrl}}/formularios/1/tentativas
 Content-Type: application/json
 
 {
-    "formulario_id": 1,
-    "nome_usuario": "Dev Senior",
-    "respostas": [
-        { "questao_id": 1, "opcao": "A" },
-        { "questao_id": 2, "opcao": "C" }
-    ]
+  "nome_responsavel": "Pai do João",
+  "respostas": [
+    { "questao_id": 1, "alternativa_id": 1 },
+    { "questao_id": 2, "alternativa_id": 6 },
+    { "questao_id": 3, "alternativa_id": 11 },
+    { "questao_id": 4, "alternativa_id": 16 },
+    { "questao_id": 5, "alternativa_id": 19 },
+    { "questao_id": 6, "alternativa_id": 23 }
+  ]
 }
 
-### Ver ranking de um formulário
+### 4. Tio do aluno responde errando algumas
+POST {{baseUrl}}/formularios/1/tentativas
+Content-Type: application/json
+
+{
+  "nome_responsavel": "Tio Marcos",
+  "respostas": [
+    { "questao_id": 1, "alternativa_id": 1 },
+    { "questao_id": 2, "alternativa_id": 5 }, 
+    { "questao_id": 3, "alternativa_id": 11 },
+    { "questao_id": 4, "alternativa_id": 13 },
+    { "questao_id": 5, "alternativa_id": 19 },
+    { "questao_id": 6, "alternativa_id": 21 }
+  ]
+}
+
+### 5. Ver o Ranking do Formulário 1
+# O Pai deve ficar acima do Tio!
 GET {{baseUrl}}/formularios/1/ranking
+
+### ==========================================
+### TESTES EXTRAS: Criando novos dados
+### ==========================================
+
+### Criar novo formulário
+POST {{baseUrl}}/formularios
+Content-Type: application/json
+
+{
+  "nome": "Quiz da Mariazinha"
+}
+
+### Criar uma questão para o novo formulário (ID 2)
+POST {{baseUrl}}/formularios/2/questoes
+Content-Type: application/json
+
+{
+  "texto": "Qual minha comida preferida?",
+  "alternativas": [
+    { "letra": "A", "texto": "Pizza", "correta": true },
+    { "letra": "B", "texto": "Sushi", "correta": false },
+    { "letra": "C", "texto": "Hambúrguer", "correta": false },
+    { "letra": "D", "texto": "Salada", "correta": false }
+  ]
+}
